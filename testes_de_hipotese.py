@@ -2,12 +2,11 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-from scipy.stats import norm, ksone
+from scipy.stats import norm, ksone, shapiro
 def kolmogorov_smirnov(data_values, alpha):
     # media e desvio
     sample_mean = np.mean(data_values)
     sample_standard_deviation = np.std(data_values)
-
     # Sorting the list of values without duplicates
     sorted_data = sorted(data_values)
     Xi = sorted(set(sorted_data))
@@ -58,15 +57,17 @@ def kolmogorov_smirnov(data_values, alpha):
     if Dcalc < Dtab:
         print("Dcalc = %.4f < Dtab = %.4f" % (Dcalc, Dtab))
         print("Accept the null hypothesis that the sample follows a normal distribution.")
+        test_result = 0
     else:
         print("Dcalc = %.4f > Dtab = %.4f" % (Dcalc, Dtab))
         print("Reject the null hypothesis that the sample follows a normal distribution")
+        test_result = 1
 
     # Creating a pandas dataframe with all frequency columns
     df = pd.DataFrame({'Xi': Xi, 'FreqAbs': freq_abs,"FreqRelative":freq_rel, 'FreqCumulative': freq_cumulative, 'FreqRelCumulative': freq_rel_cumulative, 'Zi': Zi, 'Fwaited': freq_expected,
                        '(Fwaited - Frac': Fwaited_minus_Frac, 'Fwaited - Frac-1': Fwaited_minus_Frac_1})
-    print(df)
-    return df
+    #print(df)
+    return test_result , df
 
 
 # Leitura e tratamento das tabelas de coeficientes de Wcrit
@@ -77,7 +78,7 @@ critical_values_table = critical_values_table.drop(28)
 # Convert the "tamanho n" column to integer type
 critical_values_table["tamanho n"] = critical_values_table["tamanho n"].astype(int)
 
-def shapiro_wilk(data_values, coefficient_table_Ain, alpha, critical_value_table_W):
+def shapiro_wilk(data_values, alpha, critical_value_table_W, coefficient_table_Ain):
     # Finding the value of n (sample size)
     n = len(data_values)
     if n > 30 or n < 3:
@@ -95,7 +96,6 @@ def shapiro_wilk(data_values, coefficient_table_Ain, alpha, critical_value_table
     Ain = []
     for i in range(1, (n // 2) + 1):
         Ain.append(coefficient_table_Ain.loc[(i - 1, str(n))])
-
     # Finding the value of X(n-(i-1)) in the list of values
     X_n_minus_i_minus_1 = []
     for i in range(1, (n // 2) + 1):
