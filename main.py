@@ -27,7 +27,7 @@ while True:
         #endereco = input("Digite o endereço do arquivo de dados: ")
         #endereco = "NumerosAleatorios.xlsm"
         #data_values = pd.read_excel(f'{endereco}')
-        data_values = np.random.binomial(n=100, p=0.5, size=29)
+        data_values = np.random.normal(0,0.1,29)
         #data_values = [4,6,2,10,10,12,14,16,18,20]
         alpha = float(input("Digite o valor para alpha: "))
         primeira_execucao == False
@@ -42,7 +42,7 @@ while True:
         case 2:
             print("_________________________________________________________________\n")
             info = th.shapiro_wilk(data_values, alpha, critical_values_table, coefficients_Ain)
-            #Deu erro
+            #funciona
 
         case 3:
             print("_________________________________________________________________\n")
@@ -61,9 +61,9 @@ while True:
             qtd_h1 = 0
             lista_de_testes = []
             for i in range(15):
-                data_values = np.random.normal(0, 50,100)
-                add = th.kolmogorov_smirnov(data_values, alpha)
-                if add == 0: #0 referente a H0 é siginifica que é uma dist. normal
+                data_values = np.random.normal(0, 0.1,30)
+                is_normal , df = th.kolmogorov_smirnov(data_values, alpha)
+                if is_normal == 0: #0 referente a H0 é siginifica que é uma dist. normal
                     lista_de_testes.append(0)
                     qtd_h0 += 1
                 else:
@@ -71,9 +71,9 @@ while True:
                     qtd_h1 += 1
 
             for i in range(15):
-                data_values = np.random.binomial(100, 0.5, 100)
-                add = th.kolmogorov_smirnov(data_values, alpha)
-                if add == 0: #0 referente a H0 é siginifica que é uma dist. normal
+                data_values = np.random.poisson(1,29)
+                is_normal, df = th.kolmogorov_smirnov(data_values, alpha)
+                if is_normal == 0: #0 referente a H0 é siginifica que é uma dist. normal
                     lista_de_testes.append(0)
                     qtd_h0 += 1
                 else:
@@ -88,9 +88,9 @@ while True:
             qtd_h1 = 0
             lista_de_testes = []
             for i in range(15):
-                data_values = np.random.normal(0, 50,24)
-                add = th.shapiro_wilk(data_values, alpha, critical_values_table, coefficients_Ain)
-                if add == 0: #0 referente a H0 é siginifica que é uma dist. normal
+                data_values1 = np.random.normal(0, 1, 29)
+                is_normal = th.shapiro_wilk(data_values1 , alpha, critical_values_table, coefficients_Ain)
+                if is_normal: #0 referente a H0 é siginifica que é uma dist. normal
                     lista_de_testes.append(0)
                     qtd_h0 += 1
                 else:
@@ -98,9 +98,10 @@ while True:
                     qtd_h1 += 1
 
             for i in range(15):
-                data_values = np.random.random(24)
-                add = th.shapiro_wilk(data_values, alpha, critical_values_table, coefficients_Ain)
-                if add == 0: #0 referente a H0 é siginifica que é uma dist. normal
+
+                data_values3 = np.random.poisson(5, 29)
+                is_normal = th.shapiro_wilk(data_values3, alpha, critical_values_table, coefficients_Ain)
+                if is_normal: #0 referente a H0 é siginifica que é uma dist. normal
                     lista_de_testes.append(0)
                     qtd_h0 += 1
                 else:

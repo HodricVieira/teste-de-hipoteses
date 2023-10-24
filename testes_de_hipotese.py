@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-from scipy.stats import norm, ksone, shapiro
+from scipy.stats import norm, ksone
 def kolmogorov_smirnov(data_values, alpha):
     # media e desvio
     sample_mean = np.mean(data_values)
@@ -42,16 +42,27 @@ def kolmogorov_smirnov(data_values, alpha):
     # Calculating Dtabela (critical D)
     if len(sorted_data) <= 35:
         Dtab = ksone.ppf(1 - alpha/2, len(sorted_data))
+        #values table
     else:
-        if alpha == 0.2:
+
+        if alpha == 0.2:   
+            
             Dtab = 1.07 / np.sqrt(len(sorted_data))
         elif alpha == 0.15:
+            
+            
             Dtab = 1.14 / np.sqrt(len(sorted_data))
         elif alpha == 0.10:
+            
+            
             Dtab = 1.22 / np.sqrt(len(sorted_data))
         elif alpha == 0.05:
+            
+            
             Dtab = 1.36 / np.sqrt(len(sorted_data))
         elif alpha == 0.01:
+            
+            
             Dtab = 1.63 / np.sqrt(len(sorted_data))
 
     if Dcalc < Dtab:
@@ -122,10 +133,13 @@ def shapiro_wilk(data_values, alpha, critical_value_table_W, coefficient_table_A
     # Finding the critical W value (W critical)
     Wcrit = critical_value_table_W.loc[(n - 3, str(alpha))]
 
-    if Wcrit < Wcalc:
-        print("Wcrit = %.4f < Wcalc = %.4f" % (Wcrit, Wcalc))
+
+    if Wcrit > Wcalc:
+        test_result = 0
+        print("Wcrit = %.4f > Wcalc = %.4f" % (Wcrit, Wcalc))
         print(f"Accept the null hypothesis H0 that the sample follows a normal distribution N({np.mean(data_values), np.var(data_values)}).")
     else:
+        test_result = 1
         print("Wcrit = %.4f > Wcalc = %.4f" % (Wcrit, Wcalc))
         print("Reject the null hypothesis H0 that the sample follows a normal distribution")
 
@@ -133,8 +147,7 @@ def shapiro_wilk(data_values, alpha, critical_value_table_W, coefficient_table_A
     df = pd.DataFrame({'i': i_, 'n - (i - 1)': n_minus_i_minus_1, 'Ai,n': Ain, 'X(n-(i-1))': X_n_minus_i_minus_1,
                        'Xi': Xi, 'Bi Values': values_Bi})
 
-    print(df)
-    return df
+    return test_result
 
 
 def z_test(population, alpha, two_tailed=True):
@@ -197,3 +210,36 @@ def independent_ttest(data1, data2, alpha):
     
     # return everything
     return t_stat, df, cv, p
+
+
+
+
+
+
+
+
+
+
+
+
+# función que realiza la operación y_(n-i-1) - y_i
+def operacion(dataSorted):
+    dS_y = []
+    for i in range(len(dataSorted)):
+        y2 = dataSorted[len(dataSorted)-i-1]
+        y1 = dataSorted[i]
+        dS_y.append(y2-y1)
+        '''
+        if y2-y1 < 0:
+            dS_y.append(0)
+        else:
+            dS_y.append(y2-y1)
+        '''
+    return dS_y
+
+def operacion2(Y,a):
+    A = []
+    for i in range(len(a)):
+        A.append(a[i]*Y[i])
+    
+    return A
