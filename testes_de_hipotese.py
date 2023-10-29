@@ -135,11 +135,11 @@ def shapiro_wilk(data_values, alpha, critical_value_table_W, coefficient_table_A
 
 
     if Wcrit > Wcalc:
-        test_result = 0
+        test_result = True
         print("Wcrit = %.4f > Wcalc = %.4f" % (Wcrit, Wcalc))
         print(f"Accept the null hypothesis H0 that the sample follows a normal distribution N({np.mean(data_values), np.var(data_values)}).")
     else:
-        test_result = 1
+        test_result = False
         print("Wcrit = %.4f > Wcalc = %.4f" % (Wcrit, Wcalc))
         print("Reject the null hypothesis H0 that the sample follows a normal distribution")
 
@@ -221,25 +221,3 @@ def independent_ttest(data1, data2, alpha):
 
 
 
-
-# función que realiza la operación y_(n-i-1) - y_i
-def operacion(dataSorted):
-    dS_y = []
-    for i in range(len(dataSorted)):
-        y2 = dataSorted[len(dataSorted)-i-1]
-        y1 = dataSorted[i]
-        dS_y.append(y2-y1)
-        '''
-        if y2-y1 < 0:
-            dS_y.append(0)
-        else:
-            dS_y.append(y2-y1)
-        '''
-    return dS_y
-
-def operacion2(Y,a):
-    A = []
-    for i in range(len(a)):
-        A.append(a[i]*Y[i])
-    
-    return A
