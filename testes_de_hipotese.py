@@ -183,16 +183,14 @@ def shapiro_wilk(data_values, alpha, critical_value_table_W, coefficient_table_A
 
 ########################################################################################
 
-def z_test(population, alpha, two_tailed=True):
+def z_test(population, media_sup, alpha, two_tailed=True):
     # Calcula estatisticas base
     sample_size = len(population)
     sample_mean = np.mean(population)
     population_std_dev = np.std(population)
     
     # Calculate Zcalc
-    numerator_zcalc = 0
-    for i in range (len(population)):
-        numerator_zcalc += sample_mean - population[i]
+    numerator_zcalc = sample_mean - media_sup
     denominator_zcalc = population_std_dev / np.sqrt(sample_size)
     Zcalc = numerator_zcalc / denominator_zcalc
     # Find Zcrit
@@ -205,11 +203,11 @@ def z_test(population, alpha, two_tailed=True):
     if abs(Zcalc) < abs(Zcrit):
         print(f"|Zcalc| = {abs(Zcalc)} < Zcrit = {abs(Zcrit)}")
         print(f"Accept the null hypothesis that the population mean is {sample_mean}")
-        info = "Accept the null hypothesis that the population mean is %.4f\n |Zcalc| = %.4f < Zcrit = %.4f" % (sample_mean, abs(Zcalc), abs(Zcrit))
+        info = "Accept the null hypothesis that the population mean is %.4f\n media amostral = %.4f\n |Zcalc| = %.4f < Zcrit = %.4f" % (media_sup, sample_mean, abs(Zcalc), abs(Zcrit))
     else:
         print(f"|Zcalc| = {abs(Zcalc)} > Zcrit = {abs(Zcrit)}")
         print(f"Reject the null hypothesis that the population mean is {sample_mean}")
-        info = "Reject the null hypothesis that the population mean is %.4f\n |Zcalc| = %.4f > Zcrit = %.4f" % (sample_mean, abs(Zcalc), abs(Zcrit))
+        info = "Reject the null hypothesis that the population mean is %.4f\n media amostral = %.4f\n |Zcalc| = %.4f > Zcrit = %.4f" % (media_sup, sample_mean, abs(Zcalc), abs(Zcrit))
 
     return info
 

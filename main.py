@@ -38,6 +38,8 @@ def kolmogorov_smirnov_window():
     result_label = tk.Label(window, text="")
     result_label.pack()
 
+##################################################################################################
+
 def shapiro_wilk_window():
     def run_test():
         try:
@@ -65,12 +67,15 @@ def shapiro_wilk_window():
     result_label = tk.Label(window, text="")
     result_label.pack()
 
+########################################################################################
+
 def z_test_window():
     def run_test():
         try:
             alpha = float(alpha_entry.get())
-            data_values = np.random.normal(0,1,29)
-            info = th.z_test(data_values, alpha, two_tailed=True)
+            media_sup = float(media_sup_entry.get())
+            data_values = np.random.normal(10,1,29) # media = 10
+            info = th.z_test(data_values, media_sup, alpha, two_tailed=True)
             result_label.config(text=f"Resultado: {info}")
         except:
             messagebox.showerror("Erro", "Dados inválidos")
@@ -79,7 +84,10 @@ def z_test_window():
     window.title("Teste Z")
     window.geometry("400x200")
 
-
+    media_sup_label = tk.Label(window, text="Média Suposta:")
+    media_sup_label.pack()
+    media_sup_entry = tk.Entry(window)
+    media_sup_entry.pack()
 
     alpha_label = tk.Label(window, text="Alpha:")
     alpha_label.pack()
@@ -91,6 +99,8 @@ def z_test_window():
 
     result_label = tk.Label(window, text="")
     result_label.pack()
+
+############################################################
 
 def independent_ttest_window():
     def run_test():
@@ -119,6 +129,8 @@ def independent_ttest_window():
 
     result_label = tk.Label(window, text="")
     result_label.pack()
+
+###############################################################################
 
 def kolmogorov_smirnov_conf_window():
     def run_test():
@@ -166,6 +178,8 @@ def kolmogorov_smirnov_conf_window():
     result_label = tk.Label(window, text="")
     result_label.pack()
 
+###########################################################################################
+
 def shapiro_wilk_conf_window():
     def run_test():
         try:
@@ -212,6 +226,8 @@ def shapiro_wilk_conf_window():
 
     result_label = tk.Label(window, text="")
     result_label.pack()
+
+############################################################################################
 
 def main_window():
     def show_kolmogorov_smirnov_window():
