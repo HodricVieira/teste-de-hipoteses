@@ -15,9 +15,9 @@ def kolmogorov_smirnov_window():
     def run_test():
         try:
             alpha = float(alpha_entry.get())
-            data_values = np.random.normal(0,1,29)
+            data_values = np.random.normal(0,1,50)
             info , df = th.kolmogorov_smirnov(data_values, alpha)
-            result_label.config(text=f"Resultado: {df['FreqAbs']}")
+            result_label.config(text=f"Resultado: {info},\n {df}")
         except:
             messagebox.showerror("Erro", "Dados inválidos")
 
@@ -43,8 +43,8 @@ def shapiro_wilk_window():
         try:
             alpha = float(alpha_entry.get())
             data_values = np.random.normal(0,1,29)
-            info = th.shapiro_wilk(data_values, alpha, critical_values_table, coefficients_Ain)
-            result_label.config(text=f"Resultado: {info}")
+            info, df, df2 = th.shapiro_wilk(data_values, alpha, critical_values_table, coefficients_Ain)
+            result_label.config(text=f"Resultado: {info},\n {df}\n {df2}")
         except:
             messagebox.showerror("Erro", "Dados inválidos")
 
@@ -99,8 +99,10 @@ def independent_ttest_window():
     def run_test():
         try:
             alpha = float(alpha_entry.get())
-            data_values1 = [float(x) for x in data_entry1.get().split(',')]
-            data_values2 = [float(x) for x in data_entry2.get().split(',')]
+            #data_values1 = [float(x) for x in data_entry1.get().split(',')]
+            #data_values2 = [float(x) for x in data_entry2.get().split(',')]
+            data_values1 = np.random.normal(0,1,50)
+            data_values2 = np.random.normal(0,1,50)
             th.independent_ttest(data_values1, data_values2, alpha)
             result_label.config(text="Resultado: Verificar console")
         except:
@@ -109,16 +111,6 @@ def independent_ttest_window():
     window = tk.Toplevel()
     window.title("Teste T de independência de médias")
     window.geometry("400x300")
-
-    data_label1 = tk.Label(window, text="Dados 1 (separados por vírgula):")
-    data_label1.pack()
-    data_entry1 = tk.Entry(window)
-    data_entry1.pack()
-
-    data_label2 = tk.Label(window, text="Dados 2 (separados por vírgula):")
-    data_label2.pack()
-    data_entry2 = tk.Entry(window)
-    data_entry2.pack()
 
     alpha_label = tk.Label(window, text="Alpha:")
     alpha_label.pack()
@@ -139,7 +131,7 @@ def kolmogorov_smirnov_conf_window():
             qtd_h1 = 0
             lista_de_testes = []
             for i in range(15):
-                data_values = np.random.normal(0, 0.1,29)
+                data_values = np.random.normal(0, 1,50)
                 is_normal , df = th.kolmogorov_smirnov(data_values, alpha)
                 if is_normal == 0: #0 referente a H0 é siginifica que é uma dist. normal
                     lista_de_testes.append(0)

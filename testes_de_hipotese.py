@@ -4,6 +4,12 @@ from scipy import stats
 
 from scipy.stats import norm, ksone
 def kolmogorov_smirnov(data_values, alpha):
+    #arredondamento
+    arredondados = []
+    for i in range(len(data_values)):
+        arredondados.append(round(data_values[i]))
+    data_values = arredondados
+
     # media e desvio
     sample_mean = np.mean(data_values)
     sample_standard_deviation = np.std(data_values)
@@ -66,13 +72,11 @@ def kolmogorov_smirnov(data_values, alpha):
             Dtab = 1.63 / np.sqrt(len(sorted_data))
 
     if Dcalc < Dtab:
-        print("Dcalc = %.4f < Dtab = %.4f" % (Dcalc, Dtab))
-        print("Accept the null hypothesis that the sample follows a normal distribution.")
-        test_result = 0
+        print("Accept the null hypothesis that the sample follows a normal distribution. Dcalc = %.4f < Dtab = %.4f" % (Dcalc, Dtab))
+        test_result = "Accept the null hypothesis that the sample follows a normal distribution. Dcalc = %.4f < Dtab = %.4f" % (Dcalc, Dtab)
     else:
-        print("Dcalc = %.4f > Dtab = %.4f" % (Dcalc, Dtab))
-        print("Reject the null hypothesis that the sample follows a normal distribution")
-        test_result = 1
+        print("Reject the null hypothesis that the sample follows a normal distribution Dcalc = %.4f > Dtab = %.4f" % (Dcalc, Dtab))
+        test_result = "Reject the null hypothesis that the sample follows a normal distribution Dcalc = %.4f > Dtab = %.4f" % (Dcalc, Dtab)
 
     # Creating a pandas dataframe with all frequency columns
     df = pd.DataFrame({'Xi': Xi, 'FreqAbs': freq_abs,"FreqRelative":freq_rel, 'FreqCumulative': freq_cumulative, 'FreqRelCumulative': freq_rel_cumulative, 'Zi': Zi, 'Fwaited': freq_expected,
@@ -80,6 +84,8 @@ def kolmogorov_smirnov(data_values, alpha):
     #print(df)
     return test_result , df
 
+
+################################################################################################
 
 # Leitura e tratamento das tabelas de coeficientes de Wcrit
 coefficients_Ain = pd.read_csv('Coeficientes_ain.csv', sep=';', decimal=',')
@@ -95,6 +101,32 @@ def shapiro_wilk(data_values, alpha, critical_value_table_W, coefficient_table_A
     if n > 30 or n < 3:
         return 'Error: Sample size greater than 30 or less than 3'
     
+    #arredondamento
+    arredondados = []
+    for i in range(len(data_values)):
+        arredondados.append(round(data_values[i]))
+    data_values = arredondados
+    
+    # Sorting the list of values without duplicates
+    sorted_data = sorted(data_values)
+    Si = sorted(set(sorted_data))
+    # Calculating the absolute frequency of each value
+    freq_abs = [sorted_data.count(i) for i in Si]
+    # Calculating the cumulative frequency
+    freq_cumulative = []
+    for i in range(len(freq_abs)):
+        if i == 0:
+            freq_cumulative.append(freq_abs[i])
+        else:
+            freq_cumulative.append(freq_abs[i] + freq_cumulative[i-1])
+   
+    # Calculating the relative frequency
+    freq_rel = [x / freq_cumulative[-1] for x in freq_abs]
+    # Calculating the cumulative relative frequency
+    freq_rel_cumulative = []
+    for i in range(len(freq_abs)):
+            freq_rel_cumulative.append(freq_cumulative[i] / freq_cumulative[-1])
+
     # Finding the value of i
     i_ = [i for i in range(1, (n // 2) + 1)]
     
@@ -135,20 +167,21 @@ def shapiro_wilk(data_values, alpha, critical_value_table_W, coefficient_table_A
 
 
     if Wcrit > Wcalc:
-        test_result = True
-        print("Wcrit = %.4f > Wcalc = %.4f" % (Wcrit, Wcalc))
-        print(f"Accept the null hypothesis H0 that the sample follows a normal distribution N({np.mean(data_values), np.var(data_values)}).")
+        test_result = "Accept the null hypothesis H0 that the sample follows a normal distribution Wcrit = %.4f > Wcalc = %.4f" % (Wcrit, Wcalc)
+        print("Accept the null hypothesis H0 that the sample follows a normal distribution Wcrit = %.4f > Wcalc = %.4f" % (Wcrit, Wcalc))
     else:
-        test_result = False
-        print("Wcrit = %.4f > Wcalc = %.4f" % (Wcrit, Wcalc))
-        print("Reject the null hypothesis H0 that the sample follows a normal distribution")
+        test_result = "Reject the null hypothesis H0 that the sample follows a normal distribution Wcrit = %.4f > Wcalc = %.4f" % (Wcrit, Wcalc)
+        print("Reject the null hypothesis H0 that the sample follows a normal distribution Wcrit = %.4f > Wcalc = %.4f" % (Wcrit, Wcalc))
 
     # Creating a pandas DataFrame with all the columns
-    df = pd.DataFrame({'i': i_, 'n - (i - 1)': n_minus_i_minus_1, 'Ai,n': Ain, 'X(n-(i-1))': X_n_minus_i_minus_1,
+    df2 = pd.DataFrame({'i': i_, 'n - (i - 1)': n_minus_i_minus_1, 'Ai,n': Ain, 'X(n-(i-1))': X_n_minus_i_minus_1,
                        'Xi': Xi, 'Bi Values': values_Bi})
 
-    return test_result
+    df = pd.DataFrame({'Xsi': Si, 'FreqAbs': freq_abs,"FreqRelative":freq_rel, 'FreqCumulative': freq_cumulative, 'FreqRelCumulative': freq_rel_cumulative})
 
+    return test_result, df, df2
+
+########################################################################################
 
 def z_test(population, alpha, two_tailed=True):
     # Calcula estatisticas base
@@ -176,6 +209,8 @@ def z_test(population, alpha, two_tailed=True):
         print(f"|Zcalc| = {abs(Zcalc)} > Zcrit = {abs(Zcrit)}")
         print(f"Reject the null hypothesis that the population mean is {sample_mean}")
 
+
+##########################################################################################
 
 # t-test for independent samples
 # function for calculating the t-test for two independent samples
@@ -210,14 +245,3 @@ def independent_ttest(data1, data2, alpha):
     
     # return everything
     return t_stat, df, cv, p
-
-
-
-
-
-
-
-
-
-
-
