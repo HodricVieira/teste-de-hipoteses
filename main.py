@@ -70,11 +70,8 @@ def z_test_window():
         try:
             alpha = float(alpha_entry.get())
             data_values = np.random.normal(0,1,29)
-            is_normal, df = th.z_test(data_values, alpha, two_tailed=True)
-            if is_normal:
-                result_label.config(text="Resultado: Dados seguem distribuição normal")
-            else:
-                result_label.config(text="Resultado: Dados não seguem distribuição normal")
+            info = th.z_test(data_values, alpha, two_tailed=True)
+            result_label.config(text=f"Resultado: {info}")
         except:
             messagebox.showerror("Erro", "Dados inválidos")
 

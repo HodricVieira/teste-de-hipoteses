@@ -205,9 +205,13 @@ def z_test(population, alpha, two_tailed=True):
     if abs(Zcalc) < abs(Zcrit):
         print(f"|Zcalc| = {abs(Zcalc)} < Zcrit = {abs(Zcrit)}")
         print(f"Accept the null hypothesis that the population mean is {sample_mean}")
+        info = "Accept the null hypothesis that the population mean is %.4f\n |Zcalc| = %.4f < Zcrit = %.4f" % (sample_mean, abs(Zcalc), abs(Zcrit))
     else:
         print(f"|Zcalc| = {abs(Zcalc)} > Zcrit = {abs(Zcrit)}")
         print(f"Reject the null hypothesis that the population mean is {sample_mean}")
+        info = "Reject the null hypothesis that the population mean is %.4f\n |Zcalc| = %.4f > Zcrit = %.4f" % (sample_mean, abs(Zcalc), abs(Zcrit))
+
+    return info
 
 
 ##########################################################################################
