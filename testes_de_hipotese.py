@@ -3,12 +3,9 @@ import pandas as pd
 from scipy import stats
 
 from scipy.stats import norm, ksone
+import numpy as np
+from scipy.stats import t, chi2
 def kolmogorov_smirnov(data_values, alpha):
-    #arredondamento
-    arredondados = []
-    for i in range(len(data_values)):
-        arredondados.append(round(data_values[i]))
-    data_values = arredondados
 
     # media e desvio
     sample_mean = np.mean(data_values)
@@ -53,11 +50,11 @@ def kolmogorov_smirnov(data_values, alpha):
 
         if alpha == 0.2:   
             
-            Dtab = 1.07 / np.sqrt(len(sorted_data))
+            Dtab = 1.63 / np.sqrt(len(sorted_data))
         elif alpha == 0.15:
             
             
-            Dtab = 1.14 / np.sqrt(len(sorted_data))
+            Dtab = 1.36 / np.sqrt(len(sorted_data))
         elif alpha == 0.10:
             
             
@@ -65,24 +62,25 @@ def kolmogorov_smirnov(data_values, alpha):
         elif alpha == 0.05:
             
             
-            Dtab = 1.36 / np.sqrt(len(sorted_data))
+            Dtab = 1.14 / np.sqrt(len(sorted_data))
         elif alpha == 0.01:
             
             
-            Dtab = 1.63 / np.sqrt(len(sorted_data))
+            Dtab = 1.07 / np.sqrt(len(sorted_data))
 
     if Dcalc < Dtab:
         print("Accept the null hypothesis that the sample follows a normal distribution. Dcalc = %.4f < Dtab = %.4f" % (Dcalc, Dtab))
         test_result = "Accept the null hypothesis that the sample follows a normal distribution. Dcalc = %.4f < Dtab = %.4f" % (Dcalc, Dtab)
+        result = True
     else:
         print("Reject the null hypothesis that the sample follows a normal distribution Dcalc = %.4f > Dtab = %.4f" % (Dcalc, Dtab))
         test_result = "Reject the null hypothesis that the sample follows a normal distribution Dcalc = %.4f > Dtab = %.4f" % (Dcalc, Dtab)
-
+        result = False
     # Creating a pandas dataframe with all frequency columns
     df = pd.DataFrame({'Xi': Xi, 'FreqAbs': freq_abs,"FreqRelative":freq_rel, 'FreqCumulative': freq_cumulative, 'FreqRelCumulative': freq_rel_cumulative, 'Zi': Zi, 'Fwaited': freq_expected,
                        '(Fwaited - Frac': Fwaited_minus_Frac, 'Fwaited - Frac-1': Fwaited_minus_Frac_1})
     #print(df)
-    return test_result , df
+    return test_result , df, result
 
 
 ################################################################################################
@@ -247,3 +245,46 @@ def independent_ttest(data1, data2, alpha):
     
     # return everything
     return t_stat, df, cv, p
+
+def t_test_single_sample(data, mu, alpha):
+    n = len(data)
+    x_bar = np.mean(data)
+    s = np.sqrt(np.sum((data - x_bar)**2) / (n - 1))
+    sem = s / np.sqrt(n)
+    t_stat = (x_bar - mu) / sem
+    p_value = 2 * t.sf(abs(t_stat), n - 1)
+    return t_stat, p_value, p_value < alpha
+
+def t_test_two_independent_samples(data1, data2, alpha):
+    n1, n2 = len(data1), len(data2)
+    x_bar1, x_bar2 = np.mean(data1), np.mean(data2)
+    s1, s2 = np.sqrt(np.sum((data1 - x_bar1)**2) / (n1 - 1)), np.sqrt(np.sum((data2 - x_bar2)**2) / (n2 - 1))
+    sed = np.sqrt(s1**2 / n1 + s2**2 / n2)
+    t_stat = (x_bar1 - x_bar2) / sed
+    df = n1 + n2 - 2
+    p_value = 2 * t.sf(abs(t_stat), df)
+    return t_stat, p_value, p_value < alpha
+
+def bartlett_test(sample1, sample2, *more_samples):
+    # Combine all samples into a list
+    all_samples = [sample1, sample2, *more_samples]
+
+    # Calculate the sample sizes and sample means
+    n = [len(sample) for sample in all_samples]
+    means = [np.mean(sample) for sample in all_samples]
+
+    # Calculate the sum of squared differences for each sample
+    ssd = [np.sum((sample - mean) ** 2) for sample, mean in zip(all_samples, means)]
+
+    # Calculate the degrees of freedom and the chi-squared statistic
+    k = len(all_samples)
+    df = k - 1
+    chi_squared = (np.sum([(ni - 1) * ssi for ni, ssi in zip(n, ssd)]) / (np.sum(n) - k))
+
+    # Calculate the p-value using the chi-squared distribution
+    from scipy.stats import chi2
+    p_value = 1 - chi2.cdf(chi_squared, df)
+
+    return chi_squared, p_value
+
+bartlett_test( [1,2,3,4,5], [1,2,3,4,5], [1,2,3,4,5])

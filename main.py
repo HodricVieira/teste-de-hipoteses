@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import tkinter as tk
 from tkinter import messagebox
+from scipy import stats
+from scipy.stats import t, chi2
 
 coefficients_Ain = pd.read_csv('Coeficientes_ain.csv', sep=';', decimal=',')
 critical_values_table = pd.read_csv('tabela_Wcrit.csv', sep=';', decimal=',')
@@ -141,8 +143,8 @@ def kolmogorov_smirnov_conf_window():
             lista_de_testes = []
             for i in range(15):
                 data_values = np.random.normal(0, 1,50)
-                is_normal , df = th.kolmogorov_smirnov(data_values, alpha)
-                if is_normal == 0: #0 referente a H0 é siginifica que é uma dist. normal
+                is_normal , df, result = th.kolmogorov_smirnov(data_values, alpha)
+                if result: #0 referente a H0 é siginifica que é uma dist. normal
                     lista_de_testes.append(0)
                     qtd_h0 += 1
                 else:
@@ -150,9 +152,9 @@ def kolmogorov_smirnov_conf_window():
                     qtd_h1 += 1
 
             for i in range(15):
-                data_values = np.random.poisson(1,29)
-                is_normal, df = th.kolmogorov_smirnov(data_values, alpha)
-                if is_normal == 0: #0 referente a H0 é siginifica que é uma dist. normal
+                data_values = np.random.poisson(1,50)
+                is_normal, df, result = th.kolmogorov_smirnov(data_values, alpha)
+                if result: #0 referente a H0 é siginifica que é uma dist. normal
                     lista_de_testes.append(0)
                     qtd_h0 += 1
                 else:
@@ -199,7 +201,7 @@ def shapiro_wilk_conf_window():
 
             for i in range(15):
 
-                data_values3 = np.random.poisson(5, 29)
+                data_values3 = np.random.poisson(10, 29)
                 is_normal = th.shapiro_wilk(data_values3, alpha, critical_values_table, coefficients_Ain)
                 if is_normal: #0 referente a H0 é siginifica que é uma dist. normal
                     lista_de_testes.append(0)
