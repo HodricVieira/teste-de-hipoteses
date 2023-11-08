@@ -287,12 +287,25 @@ def t_test_two_paired_samples(data1, data2, alpha):
         mean1 = np.mean(data1)
         mean2 = np.mean(data2)
         Ud = mean1 - mean2
+        print(f"Ud: {Ud}")
         d = [(data1[i] - data2[i]) for i in range(n)]
+        print(f"d: {d}")
         D = sum([di for di in d])/n
-        Sd = np.sqrt(sum([(d[i] - D)**2 for i in range(n)])/n-1)
-        t_calc = (D-Ud)/(Sd/np.sqrt(n))
-        degree_f = (n**2) - 2
+        print(f"D: {D}")
+        denominador = np.sqrt(sum([(d[i] - D)**2 for i in range(n)])/n-1)/np.sqrt(n)
+        print(f"denominador: {denominador}")
+        t_calc = (D-Ud)/denominador
+        degree_f = n - 1
         p_value = 2 * t.sf(abs(t_calc), degree_f)
+
+        if alpha == 0.05:
+            t_table = 2.101
+
+        elif alpha == 0.01:
+            t_table = 2.878
+
+        elif alpha == 0.1:
+            t_table ==  1.734
 
         """
         n1, n2 = len(data1), len(data2)
@@ -304,12 +317,12 @@ def t_test_two_paired_samples(data1, data2, alpha):
         p_value = 2 * t.sf(abs(t_stat), df)
         """
 
-    if p_value > alpha:
+    if t_calc < t_table:
         print('Accept null hypothesis that the mean difference in the population is zero.')
-        info = "Accept null hypothesis that the mean difference in the population is zero. \n Media 1: %.3f     Media 2: %.3f   diferença das medias: %.3f \n P_valor: %.3f > alpha %.3f" % (mean1, mean2, Ud, p_value, alpha)
+        info = "Accept null hypothesis that the mean difference in the population is zero. \n Media 1: %.3f     Media 2: %.3f   diferença das medias: %.3f \n t_calc: %.3f < t_table %.3f" % (mean1, mean2, Ud, t_calc, t_table)
     else:
         print('Reject the null hypothesis that the mean difference in the population is zero.')
-        info = "Reject the null hypothesis that the mean difference in the population is zero. \n Media 1: %.3f     Media 2: %.3f   diferença das medias: %.3f \n P_valor: %.3f > alpha %.3f" % (mean1, mean2, Ud, p_value, alpha)
+        info = "Reject the null hypothesis that the mean difference in the population is zero. \n Media 1: %.3f     Media 2: %.3f   diferença das medias: %.3f \n t_calc: %.3f > t_table %.3f" % (mean1, mean2, Ud, t_calc, t_table)
 
     #return t_stat, p_value, p_value < alpha
     return info

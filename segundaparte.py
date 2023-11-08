@@ -153,8 +153,8 @@ def t_test_two_paired_samples_window():
             desvio_par1 = float(desvio_par_entry1.get())
             media_par2 = float(media_par_entry2.get())
             desvio_par2 = float(desvio_par_entry2.get())
-            data_values1 = np.random.normal(media_par1, desvio_par1, 50)
-            data_values2 = np.random.normal(media_par2, desvio_par2, 50) #len(data_value2) = len(data_value1)
+            data_values1 = np.random.normal(media_par1, desvio_par1, 19)
+            data_values2 = np.random.normal(media_par2, desvio_par2, 19) #len(data_value2) = len(data_value1)
             result = th.t_test_two_paired_samples(data_values1, data_values2, alpha)
             result_label.config(text=f"Resultado: {result}")
         except:
