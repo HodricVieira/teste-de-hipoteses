@@ -240,11 +240,17 @@ def independent_ttest(data1, data2, alpha):
     # interpret via p-value
     if p > alpha:
         print('Accept null hypothesis that the means are equal.')
+        info = "Accept null hypothesis that the means are equal. \n Media 1: %.3f     Media 2: %.3f \n P_valor: %.3f > alpha %.3f" % (mean1, mean2, p, alpha)
     else:
         print('Reject the null hypothesis that the means are equal.')
-    
+        info = "Reject the null hypothesis that the means are equal. \n Media 1: %.3f     Media 2: %.3f \n P_valor: %.3f < alpha %.3f" % (mean1, mean2, p, alpha)
+
     # return everything
-    return t_stat, df, cv, p
+    # return t_stat, df, cv, p
+    return info
+
+
+#############################################################################################
 
 def t_test_single_sample(data, mu, alpha):
     n = len(data)
@@ -253,7 +259,18 @@ def t_test_single_sample(data, mu, alpha):
     sem = s / np.sqrt(n)
     t_stat = (x_bar - mu) / sem
     p_value = 2 * t.sf(abs(t_stat), n - 1)
-    return t_stat, p_value, p_value < alpha
+    
+    if p_value > alpha:
+        print(f"Accept the null hypothesis that the population mean is {x_bar}")
+        info = "Accept the null hypothesis that the population mean is %.3f\n media amostral = %.3f\n p_valor = %.3f > alpha = %.3f" % (mu, x_bar, p_value, alpha)
+    else:
+        print(f"Reject the null hypothesis that the population mean is {x_bar}")
+        info = "Reject the null hypothesis that the population mean is %.3f\n media amostral = %.3f\n p_valor = %.3f < alpha = %.3f" % (mu, x_bar, p_value, alpha)
+
+    #return t_stat, p_value, p_value < alpha
+    return info
+
+############################################################################################
 
 def t_test_two_independent_samples(data1, data2, alpha):
     n1, n2 = len(data1), len(data2)
@@ -265,7 +282,9 @@ def t_test_two_independent_samples(data1, data2, alpha):
     p_value = 2 * t.sf(abs(t_stat), df)
     return t_stat, p_value, p_value < alpha
 
-def bartlett_test(sample1, sample2, *more_samples):
+##############################################################################################
+
+def bartlett_test(alpha, sample1, sample2, *more_samples):
     # Combine all samples into a list
     all_samples = [sample1, sample2, *more_samples]
 
@@ -285,6 +304,16 @@ def bartlett_test(sample1, sample2, *more_samples):
     from scipy.stats import chi2
     p_value = 1 - chi2.cdf(chi_squared, df)
 
-    return chi_squared, p_value
+    variance1 = np.var(sample1)
+    variance2 = np.var(sample2)
 
-bartlett_test( [1,2,3,4,5], [1,2,3,4,5], [1,2,3,4,5])
+    if p_value > alpha:
+        print('Accept null hypothesis that the variance are homogeneous.')
+        info = "Accept null hypothesis that the variance are homogeneous. \n variance 1: %.3f     variance 2: %.3f \n P_valor: %.3f > alpha %.3f" % (variance1, variance2, p_value, alpha)
+    else:
+        print('Reject the null hypothesis that the variance are homogeneous.')
+        info = "Reject the null hypothesis that the variance are homogeneous. \n variance 1: %.3f     variance 2: %.3f \n P_valor: %.3f < alpha %.3f" % (variance1, variance2, p_value, alpha)
+    
+
+    #return chi_squared, p_value
+    return info

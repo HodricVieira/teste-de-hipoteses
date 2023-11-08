@@ -34,14 +34,16 @@ def z_test_window():
     result_label = tk.Label(window, text="")
     result_label.pack()
 
+########################################################################################
+
 def independent_ttest_window():
     def run_test():
         try:
             alpha = float(alpha_entry.get())
             data_values1 = np.random.normal(0, 1, 50)
             data_values2 = np.random.normal(0, 1, 50)
-            th.independent_ttest(data_values1, data_values2, alpha)
-            result_label.config(text="Resultado: Verificar console")
+            info = th.independent_ttest(data_values1, data_values2, alpha)
+            result_label.config(text=f"Resultado: {info}")
         except:
             messagebox.showerror("Erro", "Dados inválidos")
 
@@ -60,14 +62,16 @@ def independent_ttest_window():
     result_label = tk.Label(window, text="")
     result_label.pack()
 
+###################################################################################
+
 def t_test_single_sample_window():
     def run_test():
         try:
             alpha = float(alpha_entry.get())
             mu = float(mu_entry.get())
             data_values = np.random.normal(0, 1, 50)
-            t_stat, p_value, result = th.t_test_single_sample(data_values, mu, alpha)
-            result_label.config(text=f"t_stat: {t_stat}\n p_value: {p_value}\n Result: {result}")
+            info = th.t_test_single_sample(data_values, mu, alpha)
+            result_label.config(text=f"Resultado: {info}")
         except:
             messagebox.showerror("Erro", "Dados inválidos")
 
@@ -90,6 +94,8 @@ def t_test_single_sample_window():
 
     result_label = tk.Label(window, text="")
     result_label.pack()
+
+#######################################################################################
 
 def t_test_two_independent_samples_window():
     def run_test():
@@ -117,13 +123,16 @@ def t_test_two_independent_samples_window():
     result_label = tk.Label(window, text="")
     result_label.pack()
 
+#################################################################################
+
 def bartlett_test_window():
     def run_test():
         try:
+            alpha = float(alpha_entry.get())
             data_values1 = np.random.normal(0, 1, 50)
             data_values2 = np.random.normal(1, 1, 50)
-            chi2_stat, p_value = th.bartlett_test(data_values1, data_values2)
-            result_label.config(text=f"Chi2_stat: {chi2_stat}\n p_value: {p_value}")
+            info = th.bartlett_test(alpha, data_values1, data_values2)
+            result_label.config(text=f"Resultad0 {info}")
         except:
             messagebox.showerror("Erro", "Dados inválidos")
 
@@ -131,12 +140,18 @@ def bartlett_test_window():
     window.title("Teste de Bartlett")
     window.geometry("400x200")
 
+    alpha_label = tk.Label(window, text="Alpha:")
+    alpha_label.pack()
+    alpha_entry = tk.Entry(window)
+    alpha_entry.pack()
 
     run_button = tk.Button(window, text="Executar", command=run_test)
     run_button.pack()
 
     result_label = tk.Label(window, text="")
     result_label.pack()
+
+#####################################################################################
 
 def main_window():
     root = tk.Tk()
