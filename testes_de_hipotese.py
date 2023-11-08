@@ -224,14 +224,14 @@ def independent_ttest(data1, data2, alpha):
     # calculate the t statistic
     t_stat = (mean1 - mean2) / sed
     # degrees of freedom
-    df = len(data1) + len(data2) - 2
+    degree_f = len(data1) + len(data2) - 2
     # calculate the critical value
-    cv = stats.t.ppf(1.0 - alpha, df)
+    cv = stats.t.ppf(1.0 - alpha, degree_f)
     # calculate the p-value
-    p = (1.0 - stats.t.cdf(abs(t_stat), df)) * 2.0
+    p = (1.0 - stats.t.cdf(abs(t_stat), degree_f)) * 2.0
     
     # calculate the t test
-    print('t=%.3f, df=%d, cv=%.3f, p=%.3f' % (t_stat, df, cv, p))
+    print('t=%.3f, df=%d, cv=%.3f, p=%.3f' % (t_stat, degree_f, cv, p))
     # interpret via critical value
     if abs(t_stat) <= cv:
         print('Accept null hypothesis that the means are equal.')
@@ -278,30 +278,41 @@ def t_test_single_sample(data, mu, alpha):
 
 ############################################################################################
 
-def t_test_two_independent_samples(data1, data2, alpha):
-    n1, n2 = len(data1), len(data2)
-    x_bar1, x_bar2 = np.mean(data1), np.mean(data2)
-    s1, s2 = np.sqrt(np.sum((data1 - x_bar1)**2) / (n1 - 1)), np.sqrt(np.sum((data2 - x_bar2)**2) / (n2 - 1))
-    sed = np.sqrt(s1**2 / n1 + s2**2 / n2)
-    t_stat = (x_bar1 - x_bar2) / sed
-    df = n1 + n2 - 2
-    p_value = 2 * t.sf(abs(t_stat), df)
+def t_test_two_paired_samples(data1, data2, alpha):
+    info_btl, df_btl, resposta_blt = bartlett_test(alpha, data1, data2)
+    if not resposta_blt:
+        return "A variancia não é homogenea", df_btl
+    else:
+        n = len(data1) # len(data1) = len(data2)
+        mean1 = np.mean(data1)
+        mean2 = np.mean(data2)
+        Ud = mean1 - mean2
+        d = [(data1[i] - data2[i]) for i in range(n)]
+        D = sum([di for di in d])/n
+        Sd = np.sqrt(sum([(d[i] - D)**2 for i in range(n)])/n-1)
+        t_calc = (D-Ud)/(Sd/np.sqrt(n))
+        degree_f = (n**2) - 2
+        p_value = 2 * t.sf(abs(t_calc), degree_f)
+
+        """
+        n1, n2 = len(data1), len(data2)
+        x_bar1, x_bar2 = np.mean(data1), np.mean(data2)
+        s1, s2 = np.sqrt(np.sum((data1 - x_bar1)**2) / (n1 - 1)), np.sqrt(np.sum((data2 - x_bar2)**2) / (n2 - 1))
+        sed = np.sqrt(s1**2 / n1 + s2**2 / n2)
+        t_stat = (x_bar1 - x_bar2) / sed
+        df = n1 + n2 - 2
+        p_value = 2 * t.sf(abs(t_stat), df)
+        """
 
     if p_value > alpha:
-        print('Accept null hypothesis that the means are equal.')
-        info = "Accept null hypothesis that the means are equal. \n Media 1: %.3f     Media 2: %.3f \n P_valor: %.3f > alpha %.3f" % (x_bar1, x_bar2, p_value, alpha)
+        print('Accept null hypothesis that the mean difference in the population is zero.')
+        info = "Accept null hypothesis that the mean difference in the population is zero. \n Media 1: %.3f     Media 2: %.3f   diferença das medias: %.3f \n P_valor: %.3f > alpha %.3f" % (mean1, mean2, Ud, p_value, alpha)
     else:
-        print('Reject the null hypothesis that the means are equal.')
-        info = "Reject the null hypothesis that the means are equal. \n Media 1: %.3f     Media 2: %.3f \n P_valor: %.3f < alpha %.3f" % (x_bar1, x_bar2, p_value, alpha)
-
-    mean = [np.mean(data1), np.mean(data2)]
-    variance = [np.var(data1), np.var(data2)]
-    std = [np.std(data1), np.std(data2)]
-
-    df = pd.DataFrame({'Média:':mean, 'Variancia:':variance, 'Desvio Padrão:':std})
+        print('Reject the null hypothesis that the mean difference in the population is zero.')
+        info = "Reject the null hypothesis that the mean difference in the population is zero. \n Media 1: %.3f     Media 2: %.3f   diferença das medias: %.3f \n P_valor: %.3f > alpha %.3f" % (mean1, mean2, Ud, p_value, alpha)
 
     #return t_stat, p_value, p_value < alpha
-    return info, df
+    return info
 
 ##############################################################################################
 
@@ -316,11 +327,13 @@ def bartlett_test(alpha, sample1, sample2, *more_samples):
     if p_value > alpha:
         print('Accept null hypothesis that the variance are homogeneous.')
         info = "Accept null hypothesis that the variance are homogeneous. \n variance 1: %.3f     variance 2: %.3f \n P_valor: %.3f > alpha %.3f" % (variance[0], variance[1], p_value, alpha)
+        resposta = True
     else:
         print('Reject the null hypothesis that the variance are homogeneous.')
         info = "Reject the null hypothesis that the variance are homogeneous. \n variance 1: %.3f     variance 2: %.3f \n P_valor: %.3f < alpha %.3f" % (variance[0], variance[1], p_value, alpha)
-    
+        resposta = False
+
     df = pd.DataFrame({'Média:':mean, 'Variancia:':variance, 'Desvio Padrão:':std})
 
     #return chi_squared, p_value
-    return info, df
+    return info, df, resposta

@@ -145,7 +145,7 @@ def t_test_single_sample_window():
 
 #######################################################################################
 
-def t_test_two_independent_samples_window():
+def t_test_two_paired_samples_window():
     def run_test():
         try:
             alpha = float(alpha_entry.get())
@@ -154,9 +154,9 @@ def t_test_two_independent_samples_window():
             media_par2 = float(media_par_entry2.get())
             desvio_par2 = float(desvio_par_entry2.get())
             data_values1 = np.random.normal(media_par1, desvio_par1, 50)
-            data_values2 = np.random.normal(media_par2, desvio_par2, 50)
-            result, df = th.t_test_two_independent_samples(data_values1, data_values2, alpha)
-            result_label.config(text=f"Resultado: {result} \n {df}")
+            data_values2 = np.random.normal(media_par2, desvio_par2, 50) #len(data_value2) = len(data_value1)
+            result = th.t_test_two_paired_samples(data_values1, data_values2, alpha)
+            result_label.config(text=f"Resultado: {result}")
         except:
             messagebox.showerror("Erro", "Dados inválidos")
 
@@ -207,7 +207,7 @@ def bartlett_test_window():
             desvio_par2 = float(desvio_par_entry2.get())
             data_values1 = np.random.normal(media_par1, desvio_par1, 50)
             data_values2 = np.random.normal(media_par2, desvio_par2, 50)
-            info, df = th.bartlett_test(alpha, data_values1, data_values2)
+            info, df, respostabool = th.bartlett_test(alpha, data_values1, data_values2)
             result_label.config(text=f"Resultad0 {info} \n {df}")
         except:
             messagebox.showerror("Erro", "Dados inválidos")
@@ -266,7 +266,7 @@ def main_window():
     t_test_single_sample_button = tk.Button(root, text="Teste T de uma Amostra", command=t_test_single_sample_window)
     t_test_single_sample_button.pack()
 
-    t_test_two_independent_samples_button = tk.Button(root, text="Teste T de Duas Amostras Independentes", command=t_test_two_independent_samples_window)
+    t_test_two_independent_samples_button = tk.Button(root, text="Teste T de Duas Amostras emparelhadas", command=t_test_two_paired_samples_window)
     t_test_two_independent_samples_button.pack()
 
     bartlett_test_button = tk.Button(root, text="Teste de Bartlett", command=bartlett_test_window)
