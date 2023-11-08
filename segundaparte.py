@@ -102,9 +102,9 @@ def t_test_two_independent_samples_window():
         try:
             alpha = float(alpha_entry.get())
             data_values1 = np.random.normal(0, 1, 50)
-            data_values2 = np.random.normal(1, 1, 50)
-            t_stat, p_value, result = th.t_test_two_independent_samples(data_values1, data_values2, alpha)
-            result_label.config(text=f"t_stat: {t_stat}\n p_value: {p_value}\n Result: {result}")
+            data_values2 = np.random.normal(0.5, 1, 50)
+            result = th.t_test_two_independent_samples(data_values1, data_values2, alpha)
+            result_label.config(text=f"Resultado: {result}")
         except:
             messagebox.showerror("Erro", "Dados inválidos")
 
@@ -130,7 +130,7 @@ def bartlett_test_window():
         try:
             alpha = float(alpha_entry.get())
             data_values1 = np.random.normal(0, 1, 50)
-            data_values2 = np.random.normal(1, 1, 50)
+            data_values2 = np.random.normal(1, 1.2, 50)
             info = th.bartlett_test(alpha, data_values1, data_values2)
             result_label.config(text=f"Resultad0 {info}")
         except:

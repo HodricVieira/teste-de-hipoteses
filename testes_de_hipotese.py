@@ -280,29 +280,22 @@ def t_test_two_independent_samples(data1, data2, alpha):
     t_stat = (x_bar1 - x_bar2) / sed
     df = n1 + n2 - 2
     p_value = 2 * t.sf(abs(t_stat), df)
-    return t_stat, p_value, p_value < alpha
+
+    if p_value > alpha:
+        print('Accept null hypothesis that the means are equal.')
+        info = "Accept null hypothesis that the means are equal. \n Media 1: %.3f     Media 2: %.3f \n P_valor: %.3f > alpha %.3f" % (x_bar1, x_bar2, p_value, alpha)
+    else:
+        print('Reject the null hypothesis that the means are equal.')
+        info = "Reject the null hypothesis that the means are equal. \n Media 1: %.3f     Media 2: %.3f \n P_valor: %.3f < alpha %.3f" % (x_bar1, x_bar2, p_value, alpha)
+
+    #return t_stat, p_value, p_value < alpha
+    return info
 
 ##############################################################################################
 
 def bartlett_test(alpha, sample1, sample2, *more_samples):
-    # Combine all samples into a list
-    all_samples = [sample1, sample2, *more_samples]
-
-    # Calculate the sample sizes and sample means
-    n = [len(sample) for sample in all_samples]
-    means = [np.mean(sample) for sample in all_samples]
-
-    # Calculate the sum of squared differences for each sample
-    ssd = [np.sum((sample - mean) ** 2) for sample, mean in zip(all_samples, means)]
-
-    # Calculate the degrees of freedom and the chi-squared statistic
-    k = len(all_samples)
-    df = k - 1
-    chi_squared = (np.sum([(ni - 1) * ssi for ni, ssi in zip(n, ssd)]) / (np.sum(n) - k))
-
-    # Calculate the p-value using the chi-squared distribution
-    from scipy.stats import chi2
-    p_value = 1 - chi2.cdf(chi_squared, df)
+    
+    stat, p_value = stats.bartlett(sample1, sample2, *more_samples)
 
     variance1 = np.var(sample1)
     variance2 = np.var(sample2)
