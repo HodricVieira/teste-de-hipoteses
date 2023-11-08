@@ -245,9 +245,15 @@ def independent_ttest(data1, data2, alpha):
         print('Reject the null hypothesis that the means are equal.')
         info = "Reject the null hypothesis that the means are equal. \n Media 1: %.3f     Media 2: %.3f \n P_valor: %.3f < alpha %.3f" % (mean1, mean2, p, alpha)
 
+    mean = [mean1, mean2]
+    variance = [np.var(data1), np.var(data2)]
+    std = [np.std(data1), np.std(data2)]
+
+    df = pd.DataFrame({'Média:':mean, 'Variancia:':variance, 'Desvio Padrão:':std})
+
     # return everything
     # return t_stat, df, cv, p
-    return info
+    return info, df
 
 
 #############################################################################################
@@ -288,8 +294,14 @@ def t_test_two_independent_samples(data1, data2, alpha):
         print('Reject the null hypothesis that the means are equal.')
         info = "Reject the null hypothesis that the means are equal. \n Media 1: %.3f     Media 2: %.3f \n P_valor: %.3f < alpha %.3f" % (x_bar1, x_bar2, p_value, alpha)
 
+    mean = [np.mean(data1), np.mean(data2)]
+    variance = [np.var(data1), np.var(data2)]
+    std = [np.std(data1), np.std(data2)]
+
+    df = pd.DataFrame({'Média:':mean, 'Variancia:':variance, 'Desvio Padrão:':std})
+
     #return t_stat, p_value, p_value < alpha
-    return info
+    return info, df
 
 ##############################################################################################
 
@@ -297,16 +309,18 @@ def bartlett_test(alpha, sample1, sample2, *more_samples):
     
     stat, p_value = stats.bartlett(sample1, sample2, *more_samples)
 
-    variance1 = np.var(sample1)
-    variance2 = np.var(sample2)
+    mean = [np.mean(sample1), np.mean(sample2)]
+    variance = [np.var(sample1), np.var(sample2)]
+    std = [np.std(sample1), np.std(sample2)]
 
     if p_value > alpha:
         print('Accept null hypothesis that the variance are homogeneous.')
-        info = "Accept null hypothesis that the variance are homogeneous. \n variance 1: %.3f     variance 2: %.3f \n P_valor: %.3f > alpha %.3f" % (variance1, variance2, p_value, alpha)
+        info = "Accept null hypothesis that the variance are homogeneous. \n variance 1: %.3f     variance 2: %.3f \n P_valor: %.3f > alpha %.3f" % (variance[0], variance[1], p_value, alpha)
     else:
         print('Reject the null hypothesis that the variance are homogeneous.')
-        info = "Reject the null hypothesis that the variance are homogeneous. \n variance 1: %.3f     variance 2: %.3f \n P_valor: %.3f < alpha %.3f" % (variance1, variance2, p_value, alpha)
+        info = "Reject the null hypothesis that the variance are homogeneous. \n variance 1: %.3f     variance 2: %.3f \n P_valor: %.3f < alpha %.3f" % (variance[0], variance[1], p_value, alpha)
     
+    df = pd.DataFrame({'Média:':mean, 'Variancia:':variance, 'Desvio Padrão:':std})
 
     #return chi_squared, p_value
-    return info
+    return info, df
